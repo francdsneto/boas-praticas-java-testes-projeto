@@ -4,6 +4,7 @@ import br.com.alura.adopet.api.dto.CadastroAbrigoDto;
 import br.com.alura.adopet.api.exception.ValidacaoException;
 import br.com.alura.adopet.api.model.Abrigo;
 import br.com.alura.adopet.api.repository.AbrigoRepository;
+import br.com.alura.adopet.api.repository.PetRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,10 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.Assert;
 
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
 
@@ -30,9 +33,56 @@ class AbrigoServiceTest {
     @Mock
     private AbrigoRepository abrigoRepository;
 
+    @Mock
+    private PetRepository petRepository;
+
     @InjectMocks
     private AbrigoService abrigoService;
 
+
+    @Test
+    @DisplayName("Deve chamar o método findAll do repository")
+    void chamaFindAll() {
+
+        abrigoService.listar();
+
+        then(abrigoRepository).should().findAll();
+
+    }
+
+    @Test
+    @DisplayName("Deve chamar a lista de pets do abrigo através do nome")
+    void deveChamarAListaDePetsDoAbrigoAtravesDoNome() {
+
+        //arrange
+
+        var nome = "Miau";
+        given(abrigoRepository.findByNome(nome)).willReturn(Optional.of(abrigo));
+
+        //act
+        abrigoService.listarPetsDoAbrigo(nome);
+
+        //assert
+        then(petRepository).should().findByAbrigo(abrigo);
+
+    }
+
+    @Test
+    @DisplayName("Deve chamar a lista de pets do abrigo através do id")
+    void deveChamarAListaDePetsDoAbrigoAtravesDoId() {
+
+        //arrange
+
+        var id = 1l;
+        given(abrigoRepository.findById(id)).willReturn(Optional.of(abrigo));
+
+        //act
+        abrigoService.listarPetsDoAbrigo(String.valueOf(id));
+
+        //assert
+        then(petRepository).should().findByAbrigo(abrigo);
+
+    }
 
     @Test
     @DisplayName("Deve permitir o cadastro pois o abrigo ainda não foi cadastrado")

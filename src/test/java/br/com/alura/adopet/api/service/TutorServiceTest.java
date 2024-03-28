@@ -1,5 +1,6 @@
 package br.com.alura.adopet.api.service;
 
+import br.com.alura.adopet.api.dto.AtualizacaoTutorDto;
 import br.com.alura.adopet.api.dto.CadastroTutorDto;
 import br.com.alura.adopet.api.exception.ValidacaoException;
 import br.com.alura.adopet.api.model.Tutor;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +27,12 @@ class TutorServiceTest {
     @Mock
     private CadastroTutorDto cadastroTutorDto;
 
+    @Mock
+    private AtualizacaoTutorDto atualizacaoTutorDto;
+
+    @Mock
+    private Tutor tutor;
+
     @InjectMocks
     private TutorService tutorService;
 
@@ -35,10 +43,8 @@ class TutorServiceTest {
         //ARRANGE
         when(repository.existsByTelefoneOrEmail(cadastroTutorDto.telefone(), cadastroTutorDto.email())).thenReturn(false);
 
-        //ACT
-        tutorService.cadastrar(cadastroTutorDto);
-
-        //ASSERT
+        //ASSERT + ACT
+        assertDoesNotThrow(() -> tutorService.cadastrar(cadastroTutorDto));
         then(repository).should().save(new Tutor(cadastroTutorDto));
     }
 
@@ -51,6 +57,21 @@ class TutorServiceTest {
 
         //ASSERT
         Assertions.assertThrows(ValidacaoException.class, () -> tutorService.cadastrar(cadastroTutorDto));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar corretamente o tutor")
+    void cenario03() {
+
+        //ARRANGE
+        given(repository.getReferenceById(atualizacaoTutorDto.id())).willReturn(tutor);
+
+        //ACT
+        tutorService.atualizar(atualizacaoTutorDto);
+
+        //ASSERT
+        then(tutor).should().atualizarDados(atualizacaoTutorDto);
+
     }
 
 }

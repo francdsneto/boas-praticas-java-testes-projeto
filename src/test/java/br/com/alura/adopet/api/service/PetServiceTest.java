@@ -53,4 +53,14 @@ class PetServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Deve chamar o método findAllByAdotadoFalse do repositorio")
+    void cenario02() {
+        //act
+        petService.buscarPetsDisponiveis();
+
+        //assert
+        then(repository).should().findAllByAdotadoFalse();
+    }
+
 }

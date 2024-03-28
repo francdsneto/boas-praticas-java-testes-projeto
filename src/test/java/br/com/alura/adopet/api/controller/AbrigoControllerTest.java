@@ -1,5 +1,6 @@
 package br.com.alura.adopet.api.controller;
 
+import br.com.alura.adopet.api.dto.AbrigoDto;
 import br.com.alura.adopet.api.dto.CadastroAbrigoDto;
 import br.com.alura.adopet.api.dto.CadastroPetDto;
 import br.com.alura.adopet.api.dto.PetDto;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -400,6 +402,22 @@ class AbrigoControllerTest {
 
         //ASSERT
         org.junit.jupiter.api.Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+
+    }
+
+    @Test
+    @DisplayName("Deve listar os abrigos corretamente")
+    void deveListarOsAbrigos() throws Exception {
+
+        //ACT
+        var response = mockMvc.perform(
+                get("/abrigos")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        //ASSERT
+        then(abrigoService).should().listar();
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
     }
 
